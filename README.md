@@ -2,29 +2,29 @@
 
 Short, runnable recipes for the [Meshy API](https://docs.meshy.ai). Each one takes you from an API key to a model file you can use, in one command, in Python or TypeScript.
 
-| Cookbook | What you get | Difficulty |
-|---|---|---|
-| [01 · Concept art to game character](cookbooks/01-image-to-3d-character/) | A textured, PBR character GLB from one piece of concept art, ready for Blender | Beginner |
-| [02 · Text prompt to hero prop](cookbooks/02-text-to-hero-prop/) | A hero prop GLB from one sentence, with Ultra geometry, 4K PBR textures and the concept image | Intermediate |
-| [03 · Product photos to a 4K product model](cookbooks/03-photos-to-product-model/) | A life-size, Ultra-mode GLB and USDZ with 4K PBR textures from three product photos, plus four renders | Intermediate |
+| Cookbook | What you get |
+|---|---|
+| [01 · Concept art to game character](cookbooks/01-image-to-3d-character/) | A textured, PBR character GLB from one piece of concept art, ready for Blender |
+| [02 · Text prompt to hero prop](cookbooks/02-text-to-hero-prop/) | A hero prop GLB from one sentence, with Ultra geometry, 4K PBR textures and the concept image |
+| [03 · Product photos to a 4K product model](cookbooks/03-photos-to-product-model/) | A life-size, Ultra-mode GLB and USDZ with 4K PBR textures from three product photos, plus four renders |
 
 ## Use with your coding agent
 
-Paste this repository's URL into your coding agent with this prompt, or clone the repo and use it there:
+1. Clone this repository and open it in your coding agent.
+2. Paste the prompt below, replacing the bracketed text with your asset description.
+   For an image-based request, include the local image paths.
+3. The agent will choose a cookbook, check the setup, and explain the cost before generation.
 
-> Read this repository's AGENTS.md and choose the cookbook that fits my request.
-> Follow its PROMPT.md and adapt the matching Python or TypeScript implementation
-> to my existing project. Preserve task checkpoints and resumable downloads.
-> Run the offline checks first and explain the expected credit cost before a live run.
-> I want to: **[describe your asset or integration here]**.
+> Read AGENTS.md and follow the matching cookbook’s PROMPT.md. I want to
+> **[describe your asset]**. Set up the cookbook for my request and run its offline
+> checks. Before generating anything, explain the expected Meshy credit cost and
+> wait for my approval.
 
-[Agent guide](AGENTS.md) · [Inputs, dry runs, resume, and results](RUNNING.md)
+**Already know which cookbook you want?** Use its ready-to-paste example prompt instead:
 
-Each cookbook also has a focused prompt you can use directly:
-
-- [One image → character or prop](cookbooks/01-image-to-3d-character/PROMPT.md)
-- [Text → hero prop](cookbooks/02-text-to-hero-prop/PROMPT.md)
-- [Product photos → model](cookbooks/03-photos-to-product-model/PROMPT.md)
+- [Included character concept art → character GLB](cookbooks/01-image-to-3d-character/README.md#use-with-a-coding-agent)
+- [Marrow’s sea chest description → hero prop GLB](cookbooks/02-text-to-hero-prop/README.md#use-with-a-coding-agent)
+- [Included armchair photos → GLB and USDZ](cookbooks/03-photos-to-product-model/README.md#use-with-a-coding-agent)
 
 ## How the repo is laid out
 
@@ -40,3 +40,4 @@ Open the cookbook’s README and follow “Run it.” After installing dependenc
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
