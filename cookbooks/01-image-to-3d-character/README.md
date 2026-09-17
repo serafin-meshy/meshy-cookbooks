@@ -30,15 +30,20 @@ You get `output/character.glb` and a 512 px preview at `output/character-thumbna
 
 ## Use with a coding agent
 
-**Try the included example:** Open this repository in your coding agent and paste:
+1. Clone the repository and open the folder in your coding agent:
 
-> Follow `cookbooks/01-image-to-3d-character/PROMPT.md` to prepare
-> the included armored-character example from `input/concept-art.png`.
-> Keep the default settings and run the offline checks. Explain the expected Meshy
-> credit cost and wait for my approval before generating.
+       git clone https://github.com/meshy-dev/meshy-cookbooks.git
+       cd meshy-cookbooks
 
-The agent reads [PROMPT.md](PROMPT.md) for the detailed instructions; you do not need
-to paste a second prompt or fill in any placeholders to try this example.
+2. Paste this prompt as written. It names this cookbook and its included example, so there is nothing to fill in:
+
+   > Follow `cookbooks/01-image-to-3d-character/PROMPT.md` to prepare
+   > the included armored-character example from `input/concept-art.png`.
+   > Keep the default settings and run the offline checks. Explain the expected Meshy
+   > credit cost and wait for my approval before generating.
+
+3. The agent reads [PROMPT.md](PROMPT.md), installs dependencies, runs the offline checks, and tells you the
+   expected credit cost. Once you approve, it runs the generation and reports the output files.
 
 **Use your own asset:** Provide the path to your own PNG or JPEG and ask the agent to use it with `--input`.
 
