@@ -1,0 +1,16 @@
+{
+  "name": "meshy-cookbook-02-text-to-character",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "tsx main.ts"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.3",
+    "tsx": "4.23.13",
+    "typescript": "5.9.3"
+  }
+}

@@ -1,0 +1,18 @@
+# Secrets
+.env
+
+# Generated models and thumbnails (keep the empty folders)
+cookbooks/*/*/output/*
+!cookbooks/*/*/output/.gitkeep
+
+# Toolchains
+node_modules/
+__pycache__/
+.venv/
+
+# Author-only files
+CLAUDE.md
+COOKBOOK_STANDARDS.md
+
+# macOS
+.DS_Store
