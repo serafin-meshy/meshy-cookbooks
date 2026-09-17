@@ -7,13 +7,9 @@ Turn one sentence into a 4K-textured hero prop GLB in 6 to 7 minutes.
 **Time:** ~6 to 7 minutes  
 **Languages:** Python 3.10+ · TypeScript (Node 22+)
 
-## Who this is for
-
-Indie developers who need a hero prop, the one piece the camera gets close to, and have a description instead of art. You write one sentence and get back a GLB with Ultra geometry and 4K base color, metallic, roughness and normal maps.
-
 ## Run it
 
-Get an API key at https://www.meshy.ai/settings/api, then:
+Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Enterprise) and about 44 credits. Create an API key at https://www.meshy.ai/settings/api and check your credit balance at https://www.meshy.ai/settings/subscription. Current rates are at https://docs.meshy.ai/en/api/pricing. Then:
 
 **Python**
 
@@ -34,8 +30,20 @@ You get `output/hero-prop.glb`, the generated concept image at `output/hero-prop
 
 ## Use with a coding agent
 
-Give your agent this recipe's [PROMPT.md](PROMPT.md), plus a description of the asset
-or integration you want. It covers implementation, offline checks, and recovery.
+**Try the included example:** Open this repository in your coding agent and paste:
+
+> Follow `cookbooks/02-text-to-hero-prop/PROMPT.md` to prepare
+> the included Marrow’s sea chest example using the entry point’s default `PROMPT` description.
+> Keep the default settings and run the offline checks. Explain the expected Meshy
+> credit cost and wait for my approval before generating.
+
+The agent reads [PROMPT.md](PROMPT.md) for the detailed instructions; you do not need
+to paste a second prompt or fill in any placeholders to try this example.
+
+**Use your own asset:** Describe your own prop and ask the agent to pass that description with `--prompt`.
+
+**Integrate into a project:** Also provide your project path and describe how the
+feature should work. The agent will adapt the matching Python or TypeScript implementation.
 
 ## Custom inputs and resume
 

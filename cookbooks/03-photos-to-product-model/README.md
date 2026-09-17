@@ -7,13 +7,9 @@ Turn three product photos into a life-size, 4K-textured GLB and USDZ in under 6 
 **Time:** ~5 to 6 minutes  
 **Languages:** Python 3.10+ · TypeScript (Node 22+)
 
-## Who this is for
-
-E-commerce and web developers who have a few photos of a product and want a 3D model for the product page and for AR Quick Look without opening a modeling tool. You bring one to four photos and get back a life-size GLB and USDZ with 4K base color and normal maps, plus four renders for the listing.
-
 ## Run it
 
-Get an API key at https://www.meshy.ai/settings/api. The API is pay-before-you-go: this recipe spends about 35 credits per run, and API usage is bought at https://www.meshy.ai/settings/subscription. Then:
+Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Enterprise) and about 35 credits. Create an API key at https://www.meshy.ai/settings/api and check your credit balance at https://www.meshy.ai/settings/subscription. Current rates are at https://docs.meshy.ai/en/api/pricing. Then:
 
 **Python**
 
@@ -34,8 +30,21 @@ You get `output/armchair.glb`, `output/armchair.usdz` and four 512 px renders, `
 
 ## Use with a coding agent
 
-Give your agent this recipe's [PROMPT.md](PROMPT.md), plus a description of the asset
-or integration you want. It covers implementation, offline checks, and recovery.
+**Try the included example:** Open this repository in your coding agent and paste:
+
+> Follow `cookbooks/03-photos-to-product-model/PROMPT.md` to prepare
+> the included armchair example from `input/armchair-001/1-front.jpg`,
+> `input/armchair-001/2-back.jpg`, and `input/armchair-001/3-side.jpg`, in that order.
+> Keep the default settings and run the offline checks. Explain the expected Meshy
+> credit cost and wait for my approval before generating.
+
+The agent reads [PROMPT.md](PROMPT.md) for the detailed instructions; you do not need
+to paste a second prompt or fill in any placeholders to try this example.
+
+**Use your own asset:** Provide one to four PNG or JPEG paths, front view first, and ask the agent to repeat `--input` for each view.
+
+**Integrate into a project:** Also provide your project path and describe how the
+feature should work. The agent will adapt the matching Python or TypeScript implementation.
 
 ## Custom inputs and resume
 

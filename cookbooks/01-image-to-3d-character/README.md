@@ -7,13 +7,9 @@ Turn one piece of character concept art into a textured GLB in 5 to 9 minutes.
 **Time:** ~5 to 9 minutes  
 **Languages:** Python 3.10+ · TypeScript (Node 22+)
 
-## Who this is for
-
-Indie developers who have concept art for a character and want a textured GLB without modeling it by hand. You bring one PNG and get back a mesh with base color, metallic, roughness and normal maps; the same call works on a prop sketch.
-
 ## Run it
 
-Get an API key at https://www.meshy.ai/settings/api. The API is pay-before-you-go: this recipe spends about 30 credits per run, and API usage is bought at https://www.meshy.ai/settings/subscription. Then:
+Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Enterprise) and about 30 credits. Create an API key at https://www.meshy.ai/settings/api and check your credit balance at https://www.meshy.ai/settings/subscription. Current rates are at https://docs.meshy.ai/en/api/pricing. Then:
 
 **Python**
 
@@ -34,8 +30,20 @@ You get `output/character.glb` and a 512 px preview at `output/character-thumbna
 
 ## Use with a coding agent
 
-Give your agent this recipe's [PROMPT.md](PROMPT.md), plus a description of the asset
-or integration you want. It covers implementation, offline checks, and recovery.
+**Try the included example:** Open this repository in your coding agent and paste:
+
+> Follow `cookbooks/01-image-to-3d-character/PROMPT.md` to prepare
+> the included armored-character example from `input/concept-art.png`.
+> Keep the default settings and run the offline checks. Explain the expected Meshy
+> credit cost and wait for my approval before generating.
+
+The agent reads [PROMPT.md](PROMPT.md) for the detailed instructions; you do not need
+to paste a second prompt or fill in any placeholders to try this example.
+
+**Use your own asset:** Provide the path to your own PNG or JPEG and ask the agent to use it with `--input`.
+
+**Integrate into a project:** Also provide your project path and describe how the
+feature should work. The agent will adapt the matching Python or TypeScript implementation.
 
 ## Custom inputs and resume
 
