@@ -32,7 +32,7 @@ You get `output/armchair.glb`, `output/armchair.usdz` and four 512 px renders, `
 
 1. Clone the repository and open the folder in your coding agent:
 
-       git clone https://github.com/meshy-dev/meshy-cookbooks.git
+       git clone https://github.com/serafin-meshy/meshy-cookbooks.git
        cd meshy-cookbooks
 
 2. Paste this prompt as written. It names this cookbook and its included example, so there is nothing to fill in:

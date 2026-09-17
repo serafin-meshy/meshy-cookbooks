@@ -32,7 +32,7 @@ You get `output/character.glb` and a 512 px preview at `output/character-thumbna
 
 1. Clone the repository and open the folder in your coding agent:
 
-       git clone https://github.com/meshy-dev/meshy-cookbooks.git
+       git clone https://github.com/serafin-meshy/meshy-cookbooks.git
        cd meshy-cookbooks
 
 2. Paste this prompt as written. It names this cookbook and its included example, so there is nothing to fill in:
