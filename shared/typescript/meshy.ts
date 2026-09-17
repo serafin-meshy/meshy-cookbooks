@@ -24,6 +24,7 @@ export interface Task {
   image_urls: string[]; // text-to-image tasks
   task_error?: { message: string };
   consumed_credits: number;
+  ai_model?: string;
 }
 
 /** Non-2xx response from the Meshy API. Carries `status` and `body`. */
@@ -55,10 +56,11 @@ export class Meshy {
   private readonly headers: Record<string, string>;
 
   /** Use `apiKey`, or MESHY_API_KEY from the environment or ./.env. */
-  constructor(apiKey?: string) {
+  constructor(apiKey?: string, envFile = ".env") {
     try {
-      process.loadEnvFile(".env");
-    } catch {
+      process.loadEnvFile(envFile);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
       // No .env file here; rely on the environment.
     }
     const key = apiKey ?? process.env.MESHY_API_KEY;
@@ -69,7 +71,7 @@ export class Meshy {
   /** POST `payload` to /<endpoint>; return the task id. Retries 429 three times. */
   async create(endpoint: string, payload: Record<string, unknown>): Promise<string> {
     const post = () =>
-      fetch(`${BASE_URL}/${endpoint}`, { method: "POST", headers: this.headers, body: JSON.stringify(payload) });
+      fetch(`${BASE_URL}/${endpoint}`, { method: "POST", headers: this.headers, body: JSON.stringify(payload), signal: AbortSignal.timeout(60_000) });
     let res = await post();
     for (let attempt = 0; attempt < 3 && res.status === 429; attempt++) {
       await sleep(1000 * 2 ** attempt);
@@ -81,7 +83,7 @@ export class Meshy {
 
   /** GET /<endpoint>/<taskId> and return the task object. */
   async get(endpoint: string, taskId: string): Promise<Task> {
-    const res = await fetch(`${BASE_URL}/${endpoint}/${taskId}`, { headers: this.headers });
+    const res = await fetch(`${BASE_URL}/${endpoint}/${taskId}`, { headers: this.headers, signal: AbortSignal.timeout(60_000) });
     if (!res.ok) throw new MeshyAPIError(res.status, await res.text());
     return (await res.json()) as Task;
   }
@@ -107,7 +109,7 @@ export class Meshy {
 
   /** Download a result URL to `dest` (parent folders created) and return `dest`. */
   async download(url: string, dest: string): Promise<string> {
-    const res = await fetch(url); // signed URL: no auth header
+    const res = await fetch(url, { signal: AbortSignal.timeout(120_000) }); // signed URL: no auth header
     if (!res.ok) throw new MeshyAPIError(res.status, await res.text());
     await mkdir(dirname(dest), { recursive: true });
     await writeFile(dest, Buffer.from(await res.arrayBuffer()));

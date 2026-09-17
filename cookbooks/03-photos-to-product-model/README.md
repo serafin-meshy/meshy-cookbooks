@@ -32,46 +32,67 @@ Get an API key at https://www.meshy.ai/settings/api. The API is pay-before-you-g
 
 You get `output/armchair.glb`, `output/armchair.usdz` and four 512 px renders, `output/armchair-front.png`, `-right.png`, `-back.png` and `-left.png`. Drop the GLB on https://modelviewer.dev/editor to see it with its PBR maps and copy the `<model-viewer>` embed tag; select the USDZ in Finder and press Space for Quick Look.
 
+## Use with a coding agent
+
+Give your agent this recipe's [PROMPT.md](PROMPT.md), plus a description of the asset
+or integration you want. It covers implementation, offline checks, and recovery.
+
+## Custom inputs and resume
+
+From the selected language folder, validate the sample with `python main.py --dry-run`
+or `npm run dry-run`. No API key, network request, or output files are needed.
+For your own asset:
+
+```sh
+python main.py --input /path/to/front.jpg --input /path/to/back.jpg --output /path/to/new-run --dry-run
+npm start -- --input /path/to/front.jpg --input /path/to/back.jpg --output /path/to/new-run --dry-run
+```
+
+Choose one language and remove `--dry-run` for a paid generation. Defaults still work
+with `python main.py` / `npm start`. Bundled paths are relative to the entry point;
+custom paths are relative to your working directory. The output folder also contains
+`result.json` with saved task IDs, status, artifact paths/checksums, and reported credits.
+
+To continue, repeat the original command and input flags with `--resume` and the same
+`--output`, without `--dry-run`. A new asset needs a new output directory. See
+[run and recovery details](../../RUNNING.md) for uncertain submissions, stale locks,
+and the limits of offline and GLB checks. TypeScript validation: `npm run check`.
+
 ## How it works
 
-1. **Encode the three photos and create the task.** `Meshy.data_uri` reads each JPEG in `PHOTOS` into a base64 data URI, and `client.create` POSTs them as one `image_urls` list to `/openapi/v1/multi-image-to-3d` with Ultra mode, 4K textures, life-size scaling and both output formats, and returns the task id.
+1. **Encode the three photos and create the task.** `Meshy.data_uri` reads each JPEG in `PHOTOS` into a base64 data URI, and `run.task` creates or resumes a task and polls it; new tasks POST them as one `image_urls` list to `/openapi/v1/multi-image-to-3d` with Ultra mode, 4K textures, life-size scaling and both output formats, and `run.task` returns the completed task after polling.
 
 ```python
-    client = Meshy()  # reads MESHY_API_KEY from .env
-    task_id = client.create(
-        "multi-image-to-3d",
-        {
-            "image_urls": [Meshy.data_uri(p) for p in PHOTOS],
-            "ultra_mode": True,
-            "should_texture": True,
-            "enable_pbr": True,
-            "texture_resolution": "4k",
-            "auto_size": True,
-            "origin_at": "bottom",
-            "multi_view_thumbnails": True,
-            "target_formats": ["glb", "usdz"],
-        },
-    )
+        task = run.task(
+            "model",
+            "multi-image-to-3d",
+            {
+                "image_urls": [Meshy.data_uri(p) for p in args.input],
+                "ultra_mode": True,
+                "should_texture": True,
+                "enable_pbr": True,
+                "texture_resolution": "4k",
+                "auto_size": True,
+                "origin_at": "bottom",
+                "multi_view_thumbnails": True,
+                "target_formats": ["glb", "usdz"],
+            },
+        )
 ```
 
    Meshy 7 treats the first image as the front view and the rest as unordered, so `1-front.jpg` comes first in `PHOTOS`. The sample photos were generated with Meshy text-to-image; `input/SOURCES.md` has the prompt. Swap in one to four of your own JPG or PNG photos at the same paths.
 
-2. **Poll until the task finishes.** `client.wait` GETs `/openapi/v1/multi-image-to-3d/:id` every 5 seconds, prints each status change, and returns the task object once the status is `SUCCEEDED`.
-
-```python
-    task = client.wait("multi-image-to-3d", task_id)
-```
+2. **Resume and poll until the task finishes.** `run.task` saves the task ID before polling, then GETs `/openapi/v1/multi-image-to-3d/:id` every 5 seconds, prints each status change, and returns the task object once the status is `SUCCEEDED`.
 
    On `FAILED` or `CANCELED` it raises with `task_error.message`, and after 30 minutes it raises `MeshyTimeoutError`. The armchair took 4 min 42 s to 5 min 45 s to generate in the four runs behind this README. Formats are converted after generation, and that step is where a dense mesh can stall: a plush toy tried while building this cookbook sat at 99 percent for 27 minutes and then failed with `format_conversion_failed`, refunded.
 
-3. **Download the GLB, the USDZ and the four renders.** `client.download` streams `model_urls.glb` and `model_urls.usdz` to `output/`, then each entry of `thumbnail_urls`, and the script prints the path and `consumed_credits`.
+3. **Download the GLB, the USDZ and the four renders.** `run.download` streams `model_urls.glb` and `model_urls.usdz` to `output/`, then each entry of `thumbnail_urls`, and the run records paths and `consumed_credits` in `result.json`.
 
 ```python
-    glb = client.download(task["model_urls"]["glb"], OUTPUT / "armchair.glb")
-    client.download(task["model_urls"]["usdz"], OUTPUT / "armchair.usdz")
-    for view, url in task["thumbnail_urls"].items():
-        client.download(url, OUTPUT / f"armchair-{view}.png")
-    print(f"Done: {glb}  ({task['consumed_credits']} credits)")
+        run.download(task["model_urls"]["glb"], "armchair.glb")
+        run.download(task["model_urls"]["usdz"], "armchair.usdz")
+        for view, url in task["thumbnail_urls"].items():
+            run.download(url, f"armchair-{view}.png")
 ```
 
    The mesh comes back dense for the web: 178,052 to 223,548 triangles and 28.9 to 31.6 MB for the GLB with its 4K maps in the four runs behind this README, so plan on a decimation pass and texture compression before it goes on a product page.
@@ -90,7 +111,7 @@ You get `output/armchair.glb`, `output/armchair.usdz` and four 512 px renders, `
 | [`multi_view_thumbnails`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | Front, right, back and left renders as transparent 512 px PNGs for about three extra seconds. The front one is the same image the API returns as `thumbnail_url` |
 | [`target_formats`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `["glb", "usdz"]` | GLB for the web viewer, USDZ for AR Quick Look on iOS; every format is a conversion step after generation. Add `"fbx"` for a game engine |
 
-`ai_model` is left out on purpose, so the task runs on `latest`, which resolves to Meshy 7 today; Ultra mode needs it.
+`ai_model` is left out on purpose, so the task runs on `latest`, which used Meshy 7 for the measurements recorded in this README (documented September 16, 2026; the default can change); Ultra mode needs it.
 
 ## What you have now
 

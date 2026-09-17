@@ -1,12 +1,14 @@
 {
-  "name": "meshy-cookbook-02-text-to-character",
+  "name": "meshy-cookbook-02-text-to-hero-prop",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "start": "tsx main.ts"
+    "start": "tsx main.ts",
+    "check": "tsc --noEmit",
+    "dry-run": "tsx main.ts --dry-run"
   },
   "devDependencies": {
     "@types/node": "22.20.3",

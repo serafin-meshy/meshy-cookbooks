@@ -49,9 +49,11 @@ class MeshyTimeoutError(TimeoutError):
 class Meshy:
     """Thin client over POST /<endpoint>, GET /<endpoint>/:id, and result downloads."""
 
-    def __init__(self, api_key: str | None = None) -> None:
+    def __init__(
+        self, api_key: str | None = None, env_file: Path | None = None
+    ) -> None:
         """Use `api_key`, or MESHY_API_KEY from the environment or the nearest .env."""
-        load_dotenv(find_dotenv(usecwd=True))
+        load_dotenv(env_file if env_file is not None else find_dotenv(usecwd=True))
         self.api_key = api_key or os.environ.get("MESHY_API_KEY", "")
         if not self.api_key:
             raise RuntimeError(
