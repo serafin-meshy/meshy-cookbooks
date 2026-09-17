@@ -5,10 +5,10 @@ From the repository root, using Python 3.10+ and Node 22+:
 ```sh
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r cookbooks/01-image-to-3d-character/python/requirements.txt
+python -m pip install -r examples/01-image-to-3d-character/python/requirements.txt
 python -m unittest discover -s tests -p 'test_*.py'
 
-cd cookbooks/01-image-to-3d-character/typescript
+cd examples/01-image-to-3d-character/typescript
 npm install
 npm run check
 npx tsx --test ../../../tests/run.test.ts

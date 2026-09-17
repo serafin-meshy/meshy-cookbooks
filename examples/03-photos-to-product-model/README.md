@@ -13,7 +13,7 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
 
 **Python**
 
-    cd cookbooks/03-photos-to-product-model/python
+    cd examples/03-photos-to-product-model/python
     python3 -m venv .venv && source .venv/bin/activate
     cp .env.example .env          # paste your key
     pip install -r requirements.txt
@@ -21,7 +21,7 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
 
 **TypeScript**
 
-    cd cookbooks/03-photos-to-product-model/typescript
+    cd examples/03-photos-to-product-model/typescript
     cp .env.example .env          # paste your key
     npm install
     npm start
@@ -37,7 +37,7 @@ You get `output/armchair.glb`, `output/armchair.usdz` and four 512 px renders, `
 
 2. Paste this prompt as written. It names this cookbook and its included example, so there is nothing to fill in:
 
-   > Follow `cookbooks/03-photos-to-product-model/PROMPT.md` to prepare
+   > Follow `examples/03-photos-to-product-model/PROMPT.md` to prepare
    > the included armchair example from `input/armchair-001/1-front.jpg`,
    > `input/armchair-001/2-back.jpg`, and `input/armchair-001/3-side.jpg`, in that order.
    > Keep the default settings and run the offline checks. Explain the expected Meshy

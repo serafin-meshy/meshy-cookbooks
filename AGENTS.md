@@ -5,9 +5,9 @@ selected language's main file, and shared helpers. Keep context limited to those
 
 | Input / outcome | Recipe | Notes |
 |---|---|---|
-| One image → character or prop GLB | `cookbooks/01-image-to-3d-character` | One PNG or JPEG |
-| Description → textured prop GLB | `cookbooks/02-text-to-hero-prop` | Text → concept image → 3D; preserve `input_task_id` chaining |
-| Product views → GLB and USDZ | `cookbooks/03-photos-to-product-model` | 1–4 images; front first |
+| One image → character or prop GLB | `examples/01-image-to-3d-character` | One PNG or JPEG |
+| Description → textured prop GLB | `examples/02-text-to-hero-prop` | Text → concept image → 3D; preserve `input_task_id` chaining |
+| Product views → GLB and USDZ | `examples/03-photos-to-product-model` | 1–4 images; front first |
 
 ## Adapt to a project
 

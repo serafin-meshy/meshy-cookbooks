@@ -13,7 +13,7 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
 
 **Python**
 
-    cd cookbooks/02-text-to-hero-prop/python
+    cd examples/02-text-to-hero-prop/python
     python3 -m venv .venv && source .venv/bin/activate
     cp .env.example .env          # paste your key
     pip install -r requirements.txt
@@ -21,7 +21,7 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
 
 **TypeScript**
 
-    cd cookbooks/02-text-to-hero-prop/typescript
+    cd examples/02-text-to-hero-prop/typescript
     cp .env.example .env          # paste your key
     npm install
     npm start
@@ -37,7 +37,7 @@ You get `output/hero-prop.glb`, the generated concept image at `output/hero-prop
 
 2. Paste this prompt as written. It names this cookbook and its included example, so there is nothing to fill in:
 
-   > Follow `cookbooks/02-text-to-hero-prop/PROMPT.md` to prepare
+   > Follow `examples/02-text-to-hero-prop/PROMPT.md` to prepare
    > the included Marrow’s sea chest example using the entry point’s default `PROMPT` description.
    > Keep the default settings and run the offline checks. Explain the expected Meshy
    > credit cost and wait for my approval before generating.

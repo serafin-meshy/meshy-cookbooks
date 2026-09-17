@@ -13,7 +13,7 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
 
 **Python**
 
-    cd cookbooks/01-image-to-3d-character/python
+    cd examples/01-image-to-3d-character/python
     python3 -m venv .venv && source .venv/bin/activate
     cp .env.example .env          # paste your key
     pip install -r requirements.txt
@@ -21,7 +21,7 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
 
 **TypeScript**
 
-    cd cookbooks/01-image-to-3d-character/typescript
+    cd examples/01-image-to-3d-character/typescript
     cp .env.example .env          # paste your key
     npm install
     npm start
@@ -37,7 +37,7 @@ You get `output/character.glb` and a 512 px preview at `output/character-thumbna
 
 2. Paste this prompt as written. It names this cookbook and its included example, so there is nothing to fill in:
 
-   > Follow `cookbooks/01-image-to-3d-character/PROMPT.md` to prepare
+   > Follow `examples/01-image-to-3d-character/PROMPT.md` to prepare
    > the included armored-character example from `input/concept-art.png`.
    > Keep the default settings and run the offline checks. Explain the expected Meshy
    > credit cost and wait for my approval before generating.

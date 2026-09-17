@@ -10,7 +10,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 TSX = (
     ROOT
-    / "cookbooks/01-image-to-3d-character/typescript/node_modules/tsx/dist/loader.mjs"
+    / "examples/01-image-to-3d-character/typescript/node_modules/tsx/dist/loader.mjs"
 )
 
 
@@ -24,7 +24,7 @@ def invoke(command, cwd):
 
 
 with tempfile.TemporaryDirectory() as directory:
-    for recipe in sorted((ROOT / "cookbooks").iterdir()):
+    for recipe in sorted((ROOT / "examples").iterdir()):
         if not (recipe / "python/main.py").exists():
             continue
         output = str(Path(directory).resolve() / recipe.name)

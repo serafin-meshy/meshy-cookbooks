@@ -2,8 +2,8 @@
 .env
 
 # Generated models and thumbnails (keep the empty folders)
-cookbooks/*/*/output/*
-!cookbooks/*/*/output/.gitkeep
+examples/*/*/output/*
+!examples/*/*/output/.gitkeep
 
 # Toolchains
 node_modules/
