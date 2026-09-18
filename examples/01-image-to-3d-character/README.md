@@ -28,6 +28,13 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
 
 You get `output/character.glb` and a 512 px preview at `output/character-thumbnail.png`. Open the GLB in Blender with File > Import > glTF 2.0.
 
+To use your own art, pass the path to a PNG or JPEG:
+
+    python main.py /path/to/character.png
+    npm start -- /path/to/character.png
+
+Each run overwrites the files in `output/`. Stopping a run does not cancel the task: the script prints the task ID first, and `client.get` with that ID returns the finished task for up to three days.
+
 ## Use with a coding agent
 
 1. Clone the repository and open the folder in your coding agent:
@@ -37,68 +44,49 @@ You get `output/character.glb` and a 512 px preview at `output/character-thumbna
 
 2. Paste this prompt as written. It names this cookbook and its included example, so there is nothing to fill in:
 
-   > Follow `examples/01-image-to-3d-character/PROMPT.md` to prepare
-   > the included armored-character example from `input/concept-art.png`.
-   > Keep the default settings and run the offline checks. Explain the expected Meshy
-   > credit cost and wait for my approval before generating.
+   > Read `AGENTS.md` and `examples/01-image-to-3d-character/README.md`, then run
+   > the included armored-character example from `input/concept-art.png` with the
+   > default settings. Tell me the expected Meshy credit cost and wait for my
+   > approval before generating.
 
-3. The agent reads [PROMPT.md](PROMPT.md), installs dependencies, runs the offline checks, and tells you the
-   expected credit cost. Once you approve, it runs the generation and reports the output files.
+3. The agent installs dependencies and tells you the expected credit cost. Once you approve, it runs the generation and reports the output files.
 
-**Use your own asset:** Provide the path to your own PNG or JPEG and ask the agent to use it with `--input`.
+**Use your own asset:** Give the agent the path to your own PNG or JPEG instead.
 
 **Integrate into a project:** Also provide your project path and describe how the
 feature should work. The agent will adapt the matching Python or TypeScript implementation.
 
-## Custom inputs and resume
-
-From the selected language folder, validate the sample with `python main.py --dry-run`
-or `npm run dry-run`. No API key, network request, or output files are needed.
-For your own asset:
-
-```sh
-python main.py --input /path/to/character.png --output /path/to/new-run --dry-run
-npm start -- --input /path/to/character.png --output /path/to/new-run --dry-run
-```
-
-Choose one language and remove `--dry-run` for a paid generation. Defaults still work
-with `python main.py` / `npm start`. Bundled paths are relative to the entry point;
-custom paths are relative to your working directory. The output folder also contains
-`result.json` with saved task IDs, status, artifact paths/checksums, and reported credits.
-
-To continue, repeat the original command and input flags with `--resume` and the same
-`--output`, without `--dry-run`. A new asset needs a new output directory. See
-[run and recovery details](../../RUNNING.md) for uncertain submissions, stale locks,
-and the limits of offline and GLB checks. TypeScript validation: `npm run check`.
-
 ## How it works
 
-1. **Encode the art and create the task.** `Meshy.data_uri` reads `input/concept-art.png` into a base64 data URI, and `run.task` creates or resumes a task and polls it; new tasks POST the payload to `/openapi/v1/image-to-3d` and `run.task` returns the completed task after polling.
+1. **Encode the art and create the task.** `Meshy.data_uri` reads `input/concept-art.png` into a base64 data URI, and `client.create` POSTs the payload to `/openapi/v1/image-to-3d`, prints the new task ID, and returns it.
 
 ```python
-        task = run.task(
-            "model",
-            "image-to-3d",
-            {
-                "image_url": Meshy.data_uri(args.input[0]),
-                "should_texture": True,
-                "enable_pbr": True,
-                "target_formats": ["glb"],
-            },
-        )
+task_id = client.create(
+    "image-to-3d",
+    {
+        "image_url": Meshy.data_uri(INPUT),
+        "should_texture": True,
+        "enable_pbr": True,
+        "target_formats": ["glb"],
+    },
+)
 ```
 
-   A data URI means you never have to host the image anywhere. The sample is the armored character from the Meshy quick start guide; swap in your own PNG or JPG at the same path.
+   A data URI means you never have to host the image anywhere. The sample is the armored character from the Meshy quick start guide; pass your own PNG or JPG as the first argument to use it instead.
 
-2. **Resume and poll until the task finishes.** `run.task` saves the task ID before polling, then GETs `/openapi/v1/image-to-3d/:id` every 5 seconds, prints each status change, and returns the task object once the status is `SUCCEEDED`.
+2. **Poll until the task finishes.** `client.wait` GETs `/openapi/v1/image-to-3d/:id` every 5 seconds, prints each status change, and returns the task object once the status is `SUCCEEDED`.
+
+```python
+task = client.wait("image-to-3d", task_id)
+```
 
    On `FAILED` or `CANCELED` it raises with `task_error.message` and the script exits non-zero, and Meshy refunds the credits of a `FAILED` task. The three runs behind this README took between 4 min 44 s and 9 min 16 s end to end, almost all of it generation rather than queue time, so expect to wait.
 
-3. **Download the GLB and the thumbnail.** `run.download` streams the signed `model_urls.glb` URL to `output/character.glb` and `thumbnail_url` to `output/character-thumbnail.png`, then the run records paths and `consumed_credits` in `result.json`.
+3. **Download the GLB and the thumbnail.** `client.download` streams the signed `model_urls.glb` URL to `output/character.glb` and `thumbnail_url` to `output/character-thumbnail.png`, then the script prints the path and the credits the task reported.
 
 ```python
-        run.download(task["model_urls"]["glb"], "character.glb")
-        run.download(task["thumbnail_url"], "character-thumbnail.png")
+client.download(task["model_urls"]["glb"], OUTPUT / "character.glb")
+client.download(task["thumbnail_url"], OUTPUT / "character-thumbnail.png")
 ```
 
    The mesh comes back dense: 731,336 to 898,428 triangles and 27.4 to 32.2 MB across the three runs behind this README, far heavier than a game-ready asset, so plan on a decimation pass in Blender before it goes into a scene.

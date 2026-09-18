@@ -68,7 +68,7 @@ export class Meshy {
     this.headers = { Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
   }
 
-  /** POST `payload` to /<endpoint>; return the task id. Retries 429 three times. */
+  /** POST `payload` to /<endpoint>; print and return the task id. Retries 429 three times. */
   async create(endpoint: string, payload: Record<string, unknown>): Promise<string> {
     const post = () =>
       fetch(`${BASE_URL}/${endpoint}`, { method: "POST", headers: this.headers, body: JSON.stringify(payload), signal: AbortSignal.timeout(60_000) });
@@ -78,7 +78,9 @@ export class Meshy {
       res = await post();
     }
     if (!res.ok) throw new MeshyAPIError(res.status, await res.text());
-    return ((await res.json()) as { result: string }).result;
+    const taskId = ((await res.json()) as { result: string }).result;
+    console.log(`Created ${endpoint} task ${taskId}`);
+    return taskId;
   }
 
   /** GET /<endpoint>/<taskId> and return the task object. */
@@ -88,13 +90,28 @@ export class Meshy {
     return (await res.json()) as Task;
   }
 
-  /** Poll every 5 s, printing progress (prefixed by `label`), until SUCCEEDED. Throws on FAILED/CANCELED/timeout. */
+  /**
+   * Poll every 5 s, printing progress (prefixed by `label`), until SUCCEEDED.
+   * A network error, 429, or 5xx while polling is retried three times, so a blip
+   * mid-generation does not lose the task. Throws on FAILED/CANCELED/timeout.
+   */
   async wait(endpoint: string, taskId: string, label = "", timeoutMs = 1_800_000): Promise<Task> {
     const deadline = Date.now() + timeoutMs;
     const prefix = label ? `${label} ` : "";
     let last = "";
+    let failures = 0;
     for (;;) {
-      const task = await this.get(endpoint, taskId);
+      let task: Task;
+      try {
+        task = await this.get(endpoint, taskId);
+        failures = 0;
+      } catch (error) {
+        const transient = !(error instanceof MeshyAPIError) || error.status === 429 || error.status >= 500;
+        if (!transient || ++failures > 3) throw error;
+        console.log(`  ${prefix}poll failed, retrying (${(error as Error).name})`);
+        await sleep(POLL_MS);
+        continue;
+      }
       const state = `  ${prefix}${task.status.padEnd(11)} ${String(task.progress).padStart(3)}%`;
       if (state !== last) {
         console.log(state);

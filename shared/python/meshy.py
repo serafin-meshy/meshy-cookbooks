@@ -63,7 +63,7 @@ class Meshy:
         self.session.headers["Authorization"] = f"Bearer {self.api_key}"
 
     def create(self, endpoint: str, payload: dict) -> str:
-        """POST `payload` to /<endpoint>; return the task id. Retries 429 three times."""
+        """POST `payload` to /<endpoint>; print and return the task id. Retries 429 three times."""
         post = lambda: self.session.post(
             f"{BASE_URL}/{endpoint}", json=payload, timeout=60
         )
@@ -75,7 +75,9 @@ class Meshy:
             response = post()
         if not response.ok:
             raise MeshyAPIError(response.status_code, response.text)
-        return response.json()["result"]
+        task_id = response.json()["result"]
+        print(f"Created {endpoint} task {task_id}", flush=True)
+        return task_id
 
     def get(self, endpoint: str, task_id: str) -> dict:
         """GET /<endpoint>/<task_id> and return the task object."""
@@ -87,12 +89,34 @@ class Meshy:
     def wait(
         self, endpoint: str, task_id: str, label: str = "", timeout: float = 1800
     ) -> dict:
-        """Poll every 5 s, printing progress (prefixed by `label`), until SUCCEEDED. Raises on FAILED/CANCELED/timeout."""
+        """Poll every 5 s, printing progress (prefixed by `label`), until SUCCEEDED.
+
+        A network error, 429, or 5xx while polling is retried three times, so a blip
+        mid-generation does not lose the task. Raises on FAILED/CANCELED/timeout.
+        """
         deadline = time.monotonic() + timeout
         prefix = f"{label} " if label else ""
         last = ""
+        failures = 0
         while True:
-            task = self.get(endpoint, task_id)
+            try:
+                task = self.get(endpoint, task_id)
+                failures = 0
+            except (requests.RequestException, MeshyAPIError) as error:
+                transient = (
+                    isinstance(error, requests.RequestException)
+                    or error.status == 429
+                    or error.status >= 500
+                )
+                failures += 1
+                if not transient or failures > 3:
+                    raise
+                print(
+                    f"  {prefix}poll failed, retrying ({type(error).__name__})",
+                    flush=True,
+                )
+                time.sleep(POLL_SECONDS)
+                continue
             state = f"  {prefix}{task['status']:<11} {task.get('progress', 0):>3}%"
             if state != last:
                 print(state, flush=True)

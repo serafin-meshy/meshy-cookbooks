@@ -28,6 +28,13 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
 
 You get `output/hero-prop.glb`, the generated concept image at `output/hero-prop-concept.png`, and a 512 px preview at `output/hero-prop-thumbnail.png`. Open the GLB in Blender with File > Import > glTF 2.0.
 
+To describe your own prop, pass the description:
+
+    python main.py "A weathered pirate chest"
+    npm start -- "A weathered pirate chest"
+
+Each run overwrites the files in `output/`. Stopping a run does not cancel the task: the script prints each task ID first, and `client.get` with that ID returns the finished task for up to three days.
+
 ## Use with a coding agent
 
 1. Clone the repository and open the folder in your coding agent:
@@ -37,90 +44,67 @@ You get `output/hero-prop.glb`, the generated concept image at `output/hero-prop
 
 2. Paste this prompt as written. It names this cookbook and its included example, so there is nothing to fill in:
 
-   > Follow `examples/02-text-to-hero-prop/PROMPT.md` to prepare
-   > the included Marrow’s sea chest example using the entry point’s default `PROMPT` description.
-   > Keep the default settings and run the offline checks. Explain the expected Meshy
-   > credit cost and wait for my approval before generating.
+   > Read `AGENTS.md` and `examples/02-text-to-hero-prop/README.md`, then run the
+   > included Marrow’s sea chest example with the default description and settings.
+   > Tell me the expected Meshy credit cost and wait for my approval before generating.
 
-3. The agent reads [PROMPT.md](PROMPT.md), installs dependencies, runs the offline checks, and tells you the
-   expected credit cost. Once you approve, it runs the generation and reports the output files.
+3. The agent installs dependencies and tells you the expected credit cost. Once you approve, it runs the generation and reports the output files.
 
-**Use your own asset:** Describe your own prop and ask the agent to pass that description with `--prompt`.
+**Use your own asset:** Describe your own prop and ask the agent to pass that description instead.
 
 **Integrate into a project:** Also provide your project path and describe how the
 feature should work. The agent will adapt the matching Python or TypeScript implementation.
 
-## Custom inputs and resume
-
-From the selected language folder, validate the sample with `python main.py --dry-run`
-or `npm run dry-run`. No API key, network request, or output files are needed.
-For your own asset:
-
-```sh
-python main.py --prompt "A weathered pirate chest" --output /path/to/new-run --dry-run
-npm start -- --prompt "A weathered pirate chest" --output /path/to/new-run --dry-run
-```
-
-Choose one language and remove `--dry-run` for a paid generation. Defaults still work
-with `python main.py` / `npm start`. Bundled paths are relative to the entry point;
-custom paths are relative to your working directory. The output folder also contains
-`result.json` with saved task IDs, status, artifact paths/checksums, and reported credits.
-
-To continue, repeat the original command and input flags with `--resume` and the same
-`--output`, without `--dry-run`. A new asset needs a new output directory. See
-[run and recovery details](../../RUNNING.md) for uncertain submissions, stale locks,
-and the limits of offline and GLB checks. TypeScript validation: `npm run check`.
-
 ## How it works
 
-1. **Generate the concept image from the prompt.** `run.task` creates or resumes a task and polls it; new tasks POST the prompt to `/openapi/v1/text-to-image` with GPT Image 2.5 Sunburst and `remove_background` set, and `run.task` returns the completed task after polling.
+1. **Generate the concept image from the prompt.** `client.create` POSTs the prompt to `/openapi/v1/text-to-image` with GPT Image 2.5 Sunburst and `remove_background` set, prints the new task ID, and returns it.
 
 ```python
-        concept = run.task(
-            "concept",
-            "text-to-image",
-            {
-                "ai_model": "gpt-image-2-5-sunburst",
-                "prompt": args.prompt,
-                "remove_background": True,
-            },
-        )
+concept_id = client.create(
+    "text-to-image",
+    {
+        "ai_model": "gpt-image-2-5-sunburst",
+        "prompt": PROMPT,
+        "remove_background": True,
+    },
+)
 ```
 
-   `remove_background` returns the chest as a transparent cut-out, and the three-quarter view asked for in `PROMPT` shows the 3D stage two sides of it instead of one.
+   `remove_background` returns the chest as a transparent cut-out, and the three-quarter view asked for in the default prompt shows the 3D stage two sides of it instead of one.
 
-2. **Save the completed concept image.** `run.task` saves the task ID before polling, then GETs `/openapi/v1/text-to-image/:id` every 5 seconds, printing each status change under the `concept` label, and `run.download` saves the one entry in `image_urls`.
+2. **Save the completed concept image.** `client.wait` GETs `/openapi/v1/text-to-image/:id` every 5 seconds, printing each status change, and `client.download` saves the one entry in `image_urls`.
 
 ```python
-        run.download(concept["image_urls"][0], "hero-prop-concept.png")
+concept = client.wait("text-to-image", concept_id)
+client.download(concept["image_urls"][0], OUTPUT / "hero-prop-concept.png")
 ```
 
    This stage took 41 to 46 seconds in the four runs behind this README. Leave `generate_multi_view` off here: `image-to-3d` only accepts `input_task_id` from a task that produced one image, and the multi-image route is what cookbook 03 uses.
 
-3. **Chain the image into an Ultra, 4K image-to-3d task.** `run.task` creates or resumes a task and polls it; new tasks POST to `/openapi/v1/image-to-3d` with `input_task_id` pointing at the text-to-image task, so the image never leaves Meshy.
+3. **Chain the image into an Ultra, 4K image-to-3d task.** `client.create` POSTs to `/openapi/v1/image-to-3d` with `input_task_id` pointing at the text-to-image task, so the image never leaves Meshy.
 
 ```python
-        task = run.task(
-            "model",
-            "image-to-3d",
-            {
-                "input_task_id": concept["id"],
-                "ultra_mode": True,
-                "should_texture": True,
-                "enable_pbr": True,
-                "texture_resolution": "4k",
-                "target_formats": ["glb"],
-            },
-        )
+task_id = client.create(
+    "image-to-3d",
+    {
+        "input_task_id": concept_id,
+        "ultra_mode": True,
+        "should_texture": True,
+        "enable_pbr": True,
+        "texture_resolution": "4k",
+        "target_formats": ["glb"],
+    },
+)
 ```
 
    `ultra_mode` adds 5 credits for higher-fidelity geometry and `texture_resolution: "4k"` costs the same as the 2K default; both need Meshy 7, which was used for these measurements (documented September 16, 2026; `latest` can change).
 
-4. **Download the completed GLB and thumbnail.** `run.task` polls `/openapi/v1/image-to-3d/:id` the same way under the `model` label, `run.download` streams `model_urls.glb` and `thumbnail_url` to disk, and the run records paths and the credits of both tasks in `result.json`.
+4. **Download the completed GLB and thumbnail.** `client.wait` polls `/openapi/v1/image-to-3d/:id` the same way, `client.download` streams `model_urls.glb` and `thumbnail_url` to disk, and the script prints the path and the credits of both tasks.
 
 ```python
-        run.download(task["model_urls"]["glb"], "hero-prop.glb")
-        run.download(task["thumbnail_url"], "hero-prop-thumbnail.png")
+task = client.wait("image-to-3d", task_id)
+client.download(task["model_urls"]["glb"], OUTPUT / "hero-prop.glb")
+client.download(task["thumbnail_url"], OUTPUT / "hero-prop-thumbnail.png")
 ```
 
    Generation took between 4 min 52 s and 5 min 53 s across the four runs, so most of the wait is here. The mesh comes back dense: 0.71 to 1.17 million triangles and 48 to 65 MB with the 4K maps, so plan on a decimation pass in Blender before it goes into a scene.
