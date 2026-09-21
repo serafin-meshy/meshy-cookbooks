@@ -1,10 +1,10 @@
 # Text prompt to hero prop
 
-Turn one sentence into a 4K-textured hero prop GLB in 6 to 7 minutes.
+Turn one sentence into an Ultra 4K hero prop GLB in about 7 minutes.
 
 **Endpoints:** `POST /openapi/v1/text-to-image` → `GET /openapi/v1/text-to-image/:id`, then `POST /openapi/v1/image-to-3d` → `GET /openapi/v1/image-to-3d/:id`  
 **Credits:** ~44 per run (9 for the image, 35 for the model)  
-**Time:** ~6 to 7 minutes  
+**Time:** ~7 minutes  
 **Languages:** Python 3.10+ · TypeScript (Node 22+)
 
 ## Run it
@@ -79,16 +79,16 @@ concept = client.wait("text-to-image", concept_id)
 client.download(concept["image_urls"][0], OUTPUT / "hero-prop-concept.png")
 ```
 
-   This stage took 41 to 46 seconds in the four runs behind this README. Leave `generate_multi_view` off here: `image-to-3d` only accepts `input_task_id` from a task that produced one image, and the multi-image route is what cookbook 03 uses.
+   This stage took 37 to 40 seconds in the four runs behind this README. Leave `generate_multi_view` off here: `image-to-3d` only accepts `input_task_id` from a task that produced one image, and the multi-image route is what cookbook 03 uses.
 
-3. **Chain the image into an Ultra, 4K image-to-3d task.** `client.create` POSTs to `/openapi/v1/image-to-3d` with `input_task_id` pointing at the text-to-image task, so the image never leaves Meshy.
+3. **Chain the image into an Ultra 4K image-to-3d task.** `client.create` POSTs to `/openapi/v1/image-to-3d` with `input_task_id` pointing at the text-to-image task, so the image never leaves Meshy.
 
 ```python
 task_id = client.create(
     "image-to-3d",
     {
         "input_task_id": concept_id,
-        "ultra_mode": True,
+        "geometry_resolution": "4k",
         "should_texture": True,
         "enable_pbr": True,
         "texture_resolution": "4k",
@@ -97,7 +97,7 @@ task_id = client.create(
 )
 ```
 
-   `ultra_mode` adds 5 credits for higher-fidelity geometry and `texture_resolution: "4k"` costs the same as the 2K default; both need Meshy 7, which was used for these measurements (documented September 16, 2026; `latest` can change).
+   `geometry_resolution: "4k"` runs the geometry pass at 4096³ for 5 extra credits, and `texture_resolution: "4k"` sets the size of the base color and normal maps at the same credit cost as the 2K default; they are two separate settings. `geometry_resolution` needs Meshy 7.1, which `latest` has resolved to since September 18, 2026, and the older `ultra_mode: true` still works as an alias for `"2k"`.
 
 4. **Download the completed GLB and thumbnail.** `client.wait` polls `/openapi/v1/image-to-3d/:id` the same way, `client.download` streams `model_urls.glb` and `thumbnail_url` to disk, and the script prints the path and the credits of both tasks.
 
@@ -107,7 +107,7 @@ client.download(task["model_urls"]["glb"], OUTPUT / "hero-prop.glb")
 client.download(task["thumbnail_url"], OUTPUT / "hero-prop-thumbnail.png")
 ```
 
-   Generation took between 4 min 52 s and 5 min 53 s across the four runs, so most of the wait is here. The mesh comes back dense: 0.71 to 1.17 million triangles and 48 to 65 MB with the 4K maps, so plan on a decimation pass in Blender before it goes into a scene.
+   Generation took between 6 min 09 s and 6 min 30 s across the four runs, so most of the wait is here. The mesh comes back dense: 0.82 to 1.25 million triangles and 53 to 68 MB with the 4K maps, so plan on a decimation pass in Blender before it goes into a scene.
 
 ## Parameters worth changing
 
@@ -117,14 +117,14 @@ client.download(task["thumbnail_url"], OUTPUT / "hero-prop-thumbnail.png")
 | [`prompt`](https://docs.meshy.ai/en/api/text-to-image#create-a-text-to-image-task) | `PROMPT` | Name the prop, list its materials, and ask for a three-quarter view. Leave the background to the next parameter |
 | [`remove_background`](https://docs.meshy.ai/en/api/text-to-image#create-a-text-to-image-task) | `true` | Returns a transparent PNG of just the prop, so the 3D stage gets a clean cut-out |
 | [`input_task_id`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | the text-to-image task id | Chains the two tasks inside Meshy. Swap in `image_url` with a data URI of your own PNG to skip the prompt stage, as cookbook 01 does |
-| [`ultra_mode`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | `true` | Higher-fidelity geometry with finer surface detail, for 5 extra credits. Only on Meshy 7 |
+| [`geometry_resolution`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | `"4k"` | Geometry pass resolution: `standard`, `2k` (2048³) or `4k` (4096³); either Ultra tier adds 5 credits. On the same two chest concepts, `2k` generated in 3 min 33 s to 3 min 36 s and `4k` in 6 min 09 s to 6 min 30 s, for 0.96 million triangles at `2k` against 0.93 to 1.12 million at `4k`, so the extra time buys finer surface detail rather than more triangles. Needs Meshy 7.1 and a single input image, so it is not an option in cookbook 03 |
 | [`should_texture`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | `true` | You want a textured model, not a gray mesh. Set `false` for geometry only, which drops the task to 25 credits with Ultra |
 | [`enable_pbr`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | `true` | Adds metallic, roughness and normal maps that Blender wires into the Principled BSDF on import. Needs `should_texture: true` |
 | [`texture_resolution`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | `"4k"` | 4096 × 4096 base color and normal maps at the same credit cost as 2K. `"8k"` costs 5 more and, on this chest, took 12 min 15 s for a 108 MB file with only the base color at 8192 × 8192 |
 | [`target_formats`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | `["glb"]` | Only generates what you asked for; faster task. Add `"fbx"` for Unity or Unreal |
 
-`ai_model` on the 3D task is left out on purpose, so it runs on `latest`, which used Meshy 7 for the measurements recorded in this README (documented September 16, 2026; the default can change).
+`ai_model` on the 3D task is left out on purpose, so it runs on `latest`, which has been Meshy 7.1 since September 18, 2026 and was used for the measurements recorded in this README (documented September 21, 2026; the default can change).
 
 ## What you have now
 
-`output/hero-prop.glb` is one mesh with one material and three JPEG textures: a 4096 × 4096 base color, a 4096 × 4096 normal map and a 2048 × 2048 metallic-roughness map, since `texture_resolution` applies to the base color and normal only. Marrow's sea chest has 1,007,258 triangles, is 58.1 MB on disk, and cost 44 credits including the concept image. It measures 1.90 m along its longest side because Meshy normalizes scale, so size it in Blender or your engine before it goes into a scene. Cookbook 03, product photos to a 4K product model, is next in the series and feeds several photos into `multi-image-to-3d`.
+`output/hero-prop.glb` is one mesh with one material and three JPEG textures: a 4096 × 4096 base color, a 4096 × 4096 normal map and a 2048 × 2048 metallic-roughness map, since `texture_resolution` applies to the base color and normal only. Marrow's sea chest has 1,121,650 triangles, is 63.9 MB on disk, and cost 44 credits including the concept image. It measures 1.90 m along its longest side because Meshy normalizes scale, so size it in Blender or your engine before it goes into a scene. Cookbook 03, product photos to a 4K product model, is next in the series and feeds several photos into `multi-image-to-3d`.

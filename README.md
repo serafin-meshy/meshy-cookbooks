@@ -5,8 +5,8 @@ Short, runnable recipes for the [Meshy API](https://docs.meshy.ai). Each one tak
 | Cookbook | What you get |
 |---|---|
 | [01 · Concept art to game character](examples/01-image-to-3d-character/) | A textured, PBR character GLB from one piece of concept art, ready for Blender |
-| [02 · Text prompt to hero prop](examples/02-text-to-hero-prop/) | A hero prop GLB from one sentence, with Ultra geometry, 4K PBR textures and the concept image |
-| [03 · Product photos to a 4K product model](examples/03-photos-to-product-model/) | A life-size, Ultra-mode GLB and USDZ with 4K PBR textures from three product photos, plus four renders |
+| [02 · Text prompt to hero prop](examples/02-text-to-hero-prop/) | A hero prop GLB from one sentence, with Ultra 4K geometry, 4K PBR textures and the concept image |
+| [03 · Product photos to a 4K product model](examples/03-photos-to-product-model/) | A life-size GLB and USDZ with Ultra 2K geometry and 4K PBR textures from three product photos, plus four renders |
 
 ## How the repo is laid out
 

@@ -1,10 +1,10 @@
 # Concept art to game character
 
-Turn one piece of character concept art into a textured GLB in 5 to 9 minutes.
+Turn one piece of character concept art into a textured GLB in 2 to 3 minutes.
 
 **Endpoints:** `POST /openapi/v1/image-to-3d` → `GET /openapi/v1/image-to-3d/:id`  
 **Credits:** ~30 per run  
-**Time:** ~5 to 9 minutes  
+**Time:** ~2 to 3 minutes  
 **Languages:** Python 3.10+ · TypeScript (Node 22+)
 
 ## Run it
@@ -80,7 +80,7 @@ task_id = client.create(
 task = client.wait("image-to-3d", task_id)
 ```
 
-   On `FAILED` or `CANCELED` it raises with `task_error.message` and the script exits non-zero, and Meshy refunds the credits of a `FAILED` task. The three runs behind this README took between 4 min 44 s and 9 min 16 s end to end, almost all of it generation rather than queue time, so expect to wait.
+   On `FAILED` or `CANCELED` it raises with `task_error.message` and the script exits non-zero, and Meshy refunds the credits of a `FAILED` task. The four runs behind this README took between 1 min 34 s and 2 min 40 s end to end, almost all of it generation rather than queue time.
 
 3. **Download the GLB and the thumbnail.** `client.download` streams the signed `model_urls.glb` URL to `output/character.glb` and `thumbnail_url` to `output/character-thumbnail.png`, then the script prints the path and the credits the task reported.
 
@@ -89,7 +89,7 @@ client.download(task["model_urls"]["glb"], OUTPUT / "character.glb")
 client.download(task["thumbnail_url"], OUTPUT / "character-thumbnail.png")
 ```
 
-   The mesh comes back dense: 731,336 to 898,428 triangles and 27.4 to 32.2 MB across the three runs behind this README, far heavier than a game-ready asset, so plan on a decimation pass in Blender before it goes into a scene.
+   The mesh comes back dense: 765,812 to 1,028,430 triangles and 28.0 to 35.9 MB across the four runs behind this README, far heavier than a game-ready asset, so plan on a decimation pass in Blender before it goes into a scene.
 
 ## Parameters worth changing
 
@@ -100,8 +100,8 @@ client.download(task["thumbnail_url"], OUTPUT / "character-thumbnail.png")
 | [`enable_pbr`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | `true` | Adds metallic, roughness and normal maps that Blender wires into the Principled BSDF on import. Needs `should_texture: true` |
 | [`target_formats`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | `["glb"]` | Only generates what you asked for; faster task. Blender imports GLB natively. Add `"fbx"` or `"obj"` for other tools |
 
-`ai_model` is left out on purpose, so the task runs on `latest`, which used Meshy 7 for the measurements recorded in this README (documented September 16, 2026; the default can change).
+`ai_model` is left out on purpose, so the task runs on `latest`, which has been Meshy 7.1 since September 18, 2026 and was used for the measurements recorded in this README (documented September 21, 2026; the default can change).
 
 ## What you have now
 
-`output/character.glb` is one mesh with one material and three 2048 × 2048 JPEG textures: base color, metallic-roughness and normal. It stands 1.90 m tall in scene units, has 813,722 triangles, is 29.7 MB on disk, and cost 30 credits. Cookbook 02, text prompt to hero prop, is next in the series and starts from a sentence instead of art.
+`output/character.glb` is one mesh with one material and three 2048 × 2048 JPEG textures: base color, metallic-roughness and normal. It stands 1.90 m tall in scene units, has 1,003,852 triangles, is 35.2 MB on disk, and cost 30 credits. Cookbook 02, text prompt to hero prop, is next in the series; it starts from a sentence instead of art and adds `geometry_resolution` for the Ultra geometry pass.

@@ -1,10 +1,10 @@
 # Product photos to a 4K product model
 
-Turn three product photos into a life-size, 4K-textured GLB and USDZ in under 6 minutes.
+Turn three product photos into a life-size, 4K-textured GLB and USDZ in under 4 minutes.
 
 **Endpoints:** `POST /openapi/v1/multi-image-to-3d` → `GET /openapi/v1/multi-image-to-3d/:id`  
-**Credits:** ~35 per run (30 for the model, 5 for Ultra)  
-**Time:** ~5 to 6 minutes  
+**Credits:** ~35 per run (30 for the model, 5 for Ultra 2K geometry)  
+**Time:** ~4 minutes  
 **Languages:** Python 3.10+ · TypeScript (Node 22+)
 
 ## Run it
@@ -59,14 +59,14 @@ feature should work. The agent will adapt the matching Python or TypeScript impl
 
 ## How it works
 
-1. **Encode the three photos and create the task.** `Meshy.data_uri` reads each JPEG in `PHOTOS` into a base64 data URI, and `client.create` POSTs them as one `image_urls` list to `/openapi/v1/multi-image-to-3d` with Ultra mode, 4K textures, life-size scaling and both output formats, prints the new task ID, and returns it.
+1. **Encode the three photos and create the task.** `Meshy.data_uri` reads each JPEG in `PHOTOS` into a base64 data URI, and `client.create` POSTs them as one `image_urls` list to `/openapi/v1/multi-image-to-3d` with Ultra 2K geometry, 4K textures, life-size scaling and both output formats, prints the new task ID, and returns it.
 
 ```python
 task_id = client.create(
     "multi-image-to-3d",
     {
         "image_urls": [Meshy.data_uri(p) for p in PHOTOS],
-        "ultra_mode": True,
+        "geometry_resolution": "2k",
         "should_texture": True,
         "enable_pbr": True,
         "texture_resolution": "4k",
@@ -78,7 +78,7 @@ task_id = client.create(
 )
 ```
 
-   Meshy 7 treats the first image as the front view and the rest as unordered, so `1-front.jpg` comes first in `PHOTOS`. The sample photos were generated with Meshy text-to-image; `input/SOURCES.md` has the prompt. Pass one to four of your own JPG or PNG photos as arguments, front first, to use them instead.
+   Meshy 7.1 treats the first image as the front view and the rest as unordered, so `1-front.jpg` comes first in `PHOTOS`. The sample photos were generated with Meshy text-to-image; `input/SOURCES.md` has the prompt. Pass one to four of your own JPG or PNG photos as arguments, front first, to use them instead.
 
 2. **Poll until the task finishes.** `client.wait` GETs `/openapi/v1/multi-image-to-3d/:id` every 5 seconds, prints each status change, and returns the task object once the status is `SUCCEEDED`.
 
@@ -86,7 +86,7 @@ task_id = client.create(
 task = client.wait("multi-image-to-3d", task_id)
 ```
 
-   On `FAILED` or `CANCELED` it raises with `task_error.message`, and after 30 minutes it raises `MeshyTimeoutError`. The armchair took 4 min 42 s to 5 min 45 s to generate in the four runs behind this README. Formats are converted after generation, and that step is where a dense mesh can stall: a plush toy tried while building this cookbook sat at 99 percent for 27 minutes and then failed with `format_conversion_failed`, refunded.
+   On `FAILED` or `CANCELED` it raises with `task_error.message`, and after 30 minutes it raises `MeshyTimeoutError`. The armchair took 3 min 30 s to 3 min 48 s to generate in the four runs behind this README. Formats are converted after generation, and that step is where a dense mesh can stall: a plush toy tried while building this cookbook sat at 99 percent for 27 minutes and then failed with `format_conversion_failed`, refunded.
 
 3. **Download the GLB, the USDZ and the four renders.** `client.download` streams `model_urls.glb` and `model_urls.usdz` to `output/`, then each entry of `thumbnail_urls`, and the script prints the path and the credits the task reported.
 
@@ -97,14 +97,14 @@ for view, url in task["thumbnail_urls"].items():
     client.download(url, OUTPUT / f"armchair-{view}.png")
 ```
 
-   The mesh comes back dense for the web: 178,052 to 223,548 triangles and 28.9 to 31.6 MB for the GLB with its 4K maps in the four runs behind this README, so plan on a decimation pass and texture compression before it goes on a product page.
+   The mesh comes back dense for the web: 168,196 to 249,108 triangles and 29.0 to 32.6 MB for the GLB with its 4K maps in the four runs behind this README, so plan on a decimation pass and texture compression before it goes on a product page.
 
 ## Parameters worth changing
 
 | Parameter | We use | Why |
 |---|---|---|
-| [`image_urls`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | three data URIs, front first | The first image is the primary view on Meshy 7; the others fill in the back and sides. One photo works, four is the maximum |
-| [`ultra_mode`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | Higher-fidelity geometry with finer surface detail, for 5 extra credits. Only on Meshy 7 |
+| [`image_urls`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | three data URIs, front first | The first image is the primary view on Meshy 7.1; the others fill in the back and sides. One photo works, four is the maximum |
+| [`geometry_resolution`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `"2k"` | Runs the geometry pass at 2048³ for 5 extra credits. `"4k"` takes a single input image only: this endpoint answers `400 Unsupported resolution for multi-image input`, so 4K geometry is cookbook 02's option. Needs Meshy 7.1 |
 | [`should_texture`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | You want a textured model, not a gray mesh. Set `false` for geometry only, which drops the task to 25 credits with Ultra |
 | [`enable_pbr`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | Adds metallic, roughness and normal maps that model-viewer and three.js render without extra setup. Needs `should_texture: true` |
 | [`texture_resolution`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `"4k"` | 4096 × 4096 base color and normal maps instead of the 2048 default, at the same credit cost. `"8k"` costs 5 more |
@@ -113,10 +113,10 @@ for view, url in task["thumbnail_urls"].items():
 | [`multi_view_thumbnails`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | Front, right, back and left renders as transparent 512 px PNGs for about three extra seconds. The front one is the same image the API returns as `thumbnail_url` |
 | [`target_formats`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `["glb", "usdz"]` | GLB for the web viewer, USDZ for AR Quick Look on iOS; every format is a conversion step after generation. Add `"fbx"` for a game engine |
 
-`ai_model` is left out on purpose, so the task runs on `latest`, which used Meshy 7 for the measurements recorded in this README (documented September 16, 2026; the default can change); Ultra mode needs it.
+`ai_model` is left out on purpose, so the task runs on `latest`, which has been Meshy 7.1 since September 18, 2026 and was used for the measurements recorded in this README (documented September 21, 2026; the default can change); `geometry_resolution` needs it.
 
 ## What you have now
 
-`output/armchair.glb` is one mesh with one material and three JPEG textures: a 4096 × 4096 base color, a 4096 × 4096 normal map and a 2048 × 2048 metallic-roughness map, since `texture_resolution` applies to the base color and normal only. It stands 0.85 m tall in scene units with its origin on the floor, has 217,118 triangles, is 31.4 MB on disk next to a 32.3 MB USDZ, and cost 35 credits.
+`output/armchair.glb` is one mesh with one material and three JPEG textures: a 4096 × 4096 base color, a 4096 × 4096 normal map and a 2048 × 2048 metallic-roughness map, since `texture_resolution` applies to the base color and normal only. It stands 0.80 m tall in scene units with its origin on the floor, has 219,382 triangles, is 32.6 MB on disk next to a 33.5 MB USDZ, and cost 35 credits.
 
 Download everything now: Meshy deletes API results after three days on every plan except Enterprise. This is the last cookbook in the series for now; the shared client in `shared/` is the piece to copy into your own project.
