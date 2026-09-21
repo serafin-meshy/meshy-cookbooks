@@ -15,7 +15,7 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
 
 **Python**
 
-    cd examples/02-text-to-hero-prop/python
+    cd examples/03-text-to-hero-prop/python
     python3 -m venv .venv && source .venv/bin/activate
     cp .env.example .env          # paste your key
     pip install -r requirements.txt
@@ -23,7 +23,7 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
 
 **TypeScript**
 
-    cd examples/02-text-to-hero-prop/typescript
+    cd examples/03-text-to-hero-prop/typescript
     cp .env.example .env          # paste your key
     npm install
     npm start
@@ -46,7 +46,7 @@ Each run overwrites the files in `output/`. Stopping a run does not cancel the t
 
 2. Paste this prompt as written. It names this cookbook and its included example, so there is nothing to fill in:
 
-   > Read `AGENTS.md` and `examples/02-text-to-hero-prop/README.md`, then run the
+   > Read `AGENTS.md` and `examples/03-text-to-hero-prop/README.md`, then run the
    > included Marrow’s sea chest example with the default description and settings.
    > Tell me the expected Meshy credit cost and wait for my approval before generating.
 
@@ -81,7 +81,7 @@ concept = client.wait("text-to-image", concept_id)
 client.download(concept["image_urls"][0], OUTPUT / "hero-prop-concept.png")
 ```
 
-   This stage takes 37 to 40 seconds. Leave `generate_multi_view` off here: `image-to-3d` only accepts `input_task_id` from a task that produced one image, and the multi-image route is what cookbook 03 uses.
+   This stage takes 37 to 40 seconds. Leave `generate_multi_view` off here: `image-to-3d` only accepts `input_task_id` from a task that produced one image, and the multi-image route is what cookbook 04 uses.
 
 3. **Chain the image into an Ultra 4K image-to-3d task.** `client.create` POSTs to `/openapi/v1/image-to-3d` with `input_task_id` pointing at the text-to-image task, so the image never leaves Meshy.
 
@@ -119,7 +119,7 @@ client.download(task["thumbnail_url"], OUTPUT / "hero-prop-thumbnail.png")
 | [`prompt`](https://docs.meshy.ai/en/api/text-to-image#create-a-text-to-image-task) | `PROMPT` | Name the prop, list its materials, and ask for a three-quarter view. Leave the background to the next parameter |
 | [`remove_background`](https://docs.meshy.ai/en/api/text-to-image#create-a-text-to-image-task) | `true` | Returns a transparent PNG of just the prop, so the 3D stage gets a clean cut-out |
 | [`input_task_id`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | the text-to-image task id | Chains the two tasks inside Meshy. Swap in `image_url` with a data URI of your own PNG to skip the prompt stage, as cookbook 01 does |
-| [`geometry_resolution`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | `"4k"` | Geometry pass resolution: `standard`, `2k` (2048³) or `4k` (4096³); either Ultra tier adds 5 credits. On the same two chest concepts, `2k` generated in 3 min 33 s to 3 min 36 s and `4k` in 6 min 09 s to 6 min 30 s, for 0.96 million triangles at `2k` against 0.93 to 1.12 million at `4k`, so the extra time buys finer surface detail rather than more triangles. Needs Meshy 7.1 and a single input image, so it is not an option in cookbook 03 |
+| [`geometry_resolution`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | `"4k"` | Geometry pass resolution: `standard`, `2k` (2048³) or `4k` (4096³); either Ultra tier adds 5 credits. On the same two chest concepts, `2k` generated in 3 min 33 s to 3 min 36 s and `4k` in 6 min 09 s to 6 min 30 s, for 0.96 million triangles at `2k` against 0.93 to 1.12 million at `4k`, so the extra time buys finer surface detail rather than more triangles. Needs Meshy 7.1 and a single input image, so it is not an option in cookbook 04 |
 | [`should_texture`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | `true` | You want a textured model, not a gray mesh. Set `false` for geometry only, which drops the task to 25 credits with Ultra |
 | [`enable_pbr`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | `true` | Adds metallic, roughness and normal maps that Blender wires into the Principled BSDF on import. Needs `should_texture: true` |
 | [`texture_resolution`](https://docs.meshy.ai/en/api/image-to-3d#create-an-image-to-3d-task) | `"4k"` | 4096 × 4096 base color and normal maps at the same credit cost as 2K. `"8k"` costs 5 more and, on this chest, took 12 min 15 s for a 108 MB file with only the base color at 8192 × 8192 |
@@ -129,4 +129,4 @@ client.download(task["thumbnail_url"], OUTPUT / "hero-prop-thumbnail.png")
 
 ## What you have now
 
-`output/hero-prop.glb` is one mesh with one material and three JPEG textures: a 4096 × 4096 base color, a 4096 × 4096 normal map and a 2048 × 2048 metallic-roughness map, since `texture_resolution` applies to the base color and normal only. Marrow's sea chest has 1,121,650 triangles, is 63.9 MB on disk, and cost 44 credits including the concept image. It measures 1.90 m along its longest side because Meshy normalizes scale, so size it in Blender or your engine before it goes into a scene. Cookbook 03, product photos to a 4K product model, is next in the series and feeds several photos into `multi-image-to-3d`.
+`output/hero-prop.glb` is one mesh with one material and three JPEG textures: a 4096 × 4096 base color, a 4096 × 4096 normal map and a 2048 × 2048 metallic-roughness map, since `texture_resolution` applies to the base color and normal only. Marrow's sea chest has 1,121,650 triangles, is 63.9 MB on disk, and cost 44 credits including the concept image. It measures 1.90 m along its longest side because Meshy normalizes scale, so size it in Blender or your engine before it goes into a scene. Cookbook 04, product photos to a 4K product model, is next in the series and feeds several photos into `multi-image-to-3d`.

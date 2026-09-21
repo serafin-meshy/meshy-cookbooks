@@ -7,7 +7,7 @@ Turn one piece of character concept art into a textured GLB in 2 to 3 minutes.
 **Time:** ~2 to 3 minutes  
 **Languages:** Python 3.10+ · TypeScript (Node 22+)
 
-`image-to-3d` takes one picture and returns a textured mesh, and it runs as a single task, so the whole recipe is one request, one poll loop and one download. That makes it the right starting point when you already have concept art and want to see it as a model before deciding how far to take it. This recipe sends one PNG as a data URI with texturing and PBR maps turned on and downloads a dense GLB of around a million triangles; cookbook 04 uses the same endpoint with Smart Topology when you want a light, untextured low-poly mesh instead.
+`image-to-3d` takes one picture and returns a textured mesh, and it runs as a single task, so the whole recipe is one request, one poll loop and one download. That makes it the right starting point when you already have concept art and want to see it as a model before deciding how far to take it. This recipe sends one PNG as a data URI with texturing and PBR maps turned on and downloads a dense GLB of around a million triangles; cookbook 02 uses the same endpoint with Smart Topology when you want a light, untextured low-poly mesh instead.
 
 ## Run it
 
@@ -106,4 +106,4 @@ client.download(task["thumbnail_url"], OUTPUT / "character-thumbnail.png")
 
 ## What you have now
 
-`output/character.glb` is one mesh with one material and three 2048 × 2048 JPEG textures: base color, metallic-roughness and normal. It stands 1.90 m tall in scene units, has 1,003,852 triangles, is 35.2 MB on disk, and cost 30 credits. Cookbook 02, text prompt to hero prop, is next in the series; it starts from a sentence instead of art and adds `geometry_resolution` for the Ultra geometry pass.
+`output/character.glb` is one mesh with one material and three 2048 × 2048 JPEG textures: base color, metallic-roughness and normal. It stands 1.90 m tall in scene units, has 1,003,852 triangles, is 35.2 MB on disk, and cost 30 credits. Cookbook 02, concept image to low-poly game prop, is next in the series; it sends the same kind of image to the same endpoint with Smart Topology and gets back an untextured mesh of about a thousand triangles in seconds.

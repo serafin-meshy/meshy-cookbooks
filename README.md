@@ -2,12 +2,14 @@
 
 Short, runnable recipes for the [Meshy API](https://docs.meshy.ai). Each one takes you from an API key to a model file you can use, in one command, in Python or TypeScript.
 
+Follow cookbooks 01 → 02 → 03 → 04 in sequence to learn the core workflow and then explore its variations. Or jump to the project that matches your needs.
+
 | Cookbook | What you get |
 |---|---|
 | [01 · Concept art to game character](examples/01-image-to-3d-character/) | A textured, PBR character GLB from one piece of concept art, ready for Blender |
-| [02 · Text prompt to hero prop](examples/02-text-to-hero-prop/) | A hero prop GLB from one sentence, with Ultra 4K geometry, 4K PBR textures and the concept image |
-| [03 · Product photos to a 4K product model](examples/03-photos-to-product-model/) | A life-size GLB and USDZ with Ultra 2K geometry and 4K PBR textures from three product photos, plus four renders |
-| [04 · Concept image to low-poly game prop](examples/04-image-to-low-poly-prop/) | A low-poly GLB at a face count you choose, from one concept image, in seconds |
+| [02 · Concept image to low-poly game prop](examples/02-image-to-low-poly-prop/) | A low-poly GLB at a face count you choose, from one concept image, in seconds |
+| [03 · Text prompt to hero prop](examples/03-text-to-hero-prop/) | A hero prop GLB from one sentence, with Ultra 4K geometry, 4K PBR textures and the concept image |
+| [04 · Product photos to a 4K product model](examples/04-photos-to-product-model/) | A life-size GLB and USDZ with Ultra 2K geometry and 4K PBR textures from three product photos, plus four renders |
 
 ## How the repo is laid out
 

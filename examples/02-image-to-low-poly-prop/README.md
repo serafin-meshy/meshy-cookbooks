@@ -15,7 +15,7 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
 
 **Python**
 
-    cd examples/04-image-to-low-poly-prop/python
+    cd examples/02-image-to-low-poly-prop/python
     python3 -m venv .venv && source .venv/bin/activate
     cp .env.example .env          # paste your key
     pip install -r requirements.txt
@@ -23,7 +23,7 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
 
 **TypeScript**
 
-    cd examples/04-image-to-low-poly-prop/typescript
+    cd examples/02-image-to-low-poly-prop/typescript
     cp .env.example .env          # paste your key
     npm install
     npm start
@@ -46,7 +46,7 @@ The face count can be anything from 100 to 15,000. Each run overwrites the files
 
 2. Paste this prompt as written. It names this cookbook and its included example, so there is nothing to fill in:
 
-   > Read `AGENTS.md` and `examples/04-image-to-low-poly-prop/README.md`, then run the
+   > Read `AGENTS.md` and `examples/02-image-to-low-poly-prop/README.md`, then run the
    > included oak tree example with the default image and face count.
    > Tell me the expected Meshy credit cost and wait for my approval before generating.
 
@@ -107,4 +107,4 @@ print(f"Done: {OUTPUT / 'low-poly-prop.glb'}  ({task['consumed_credits']} credit
 
 ## What you have now
 
-`output/low-poly-prop.glb` is one mesh of 1,096 triangles and 556 vertices, 20.5 KB on disk, made from the oak concept for 5 credits in 7 seconds. Meshy normalizes it to 1.00 m along its longest side, so scale it in Blender or your engine before it goes into a scene. Cookbook 01, concept art to game character, is the same endpoint without `model_type` and shows what the dense standard pass gives you for the same kind of input.
+`output/low-poly-prop.glb` is one mesh of 1,096 triangles and 556 vertices, 20.5 KB on disk, made from the oak concept for 5 credits in 7 seconds. Meshy normalizes it to 1.00 m along its longest side, so scale it in Blender or your engine before it goes into a scene. Cookbook 01, concept art to game character, is the same endpoint without `model_type` and shows what the dense standard pass gives you for the same kind of input. Cookbook 03, text prompt to hero prop, is next in the series; it starts from a sentence instead of an image and adds `geometry_resolution` for the Ultra geometry pass.

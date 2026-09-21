@@ -15,7 +15,7 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
 
 **Python**
 
-    cd examples/03-photos-to-product-model/python
+    cd examples/04-photos-to-product-model/python
     python3 -m venv .venv && source .venv/bin/activate
     cp .env.example .env          # paste your key
     pip install -r requirements.txt
@@ -23,7 +23,7 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
 
 **TypeScript**
 
-    cd examples/03-photos-to-product-model/typescript
+    cd examples/04-photos-to-product-model/typescript
     cp .env.example .env          # paste your key
     npm install
     npm start
@@ -46,7 +46,7 @@ Each run overwrites the files in `output/`. Stopping a run does not cancel the t
 
 2. Paste this prompt as written. It names this cookbook and its included example, so there is nothing to fill in:
 
-   > Read `AGENTS.md` and `examples/03-photos-to-product-model/README.md`, then run
+   > Read `AGENTS.md` and `examples/04-photos-to-product-model/README.md`, then run
    > the included armchair example from `input/armchair-001/1-front.jpg`,
    > `input/armchair-001/2-back.jpg`, and `input/armchair-001/3-side.jpg`, in that
    > order, with the default settings. Tell me the expected Meshy credit cost and
@@ -106,11 +106,11 @@ for view, url in task["thumbnail_urls"].items():
 | Parameter | We use | Why |
 |---|---|---|
 | [`image_urls`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | three data URIs, front first | The first image is the primary view on Meshy 7.1; the others fill in the back and sides. One photo works, four is the maximum |
-| [`geometry_resolution`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `"2k"` | Runs the geometry pass at 2048³ for 5 extra credits. `"4k"` takes a single input image only: this endpoint answers `400 Unsupported resolution for multi-image input`, so 4K geometry is cookbook 02's option. Needs Meshy 7.1 |
+| [`geometry_resolution`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `"2k"` | Runs the geometry pass at 2048³ for 5 extra credits. `"4k"` takes a single input image only: this endpoint answers `400 Unsupported resolution for multi-image input`, so 4K geometry is cookbook 03's option. Needs Meshy 7.1 |
 | [`should_texture`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | You want a textured model, not a gray mesh. Set `false` for geometry only, which drops the task to 25 credits with Ultra |
 | [`enable_pbr`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | Adds metallic, roughness and normal maps that model-viewer and three.js render without extra setup. Needs `should_texture: true` |
 | [`texture_resolution`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `"4k"` | 4096 × 4096 base color and normal maps instead of the 2048 default, at the same credit cost. `"8k"` costs 5 more |
-| [`auto_size`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | Scales the model to an estimated real-world size, so AR Quick Look shows it at the right size; without it, every model in cookbooks 01 and 02 came back 1.90 m tall whatever it depicts. The armchair came back 0.80 to 0.85 m tall. It is an estimate from the photos: a wooden toy car tried while building this cookbook came back as a 2.8 m car, so check the number |
+| [`auto_size`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | Scales the model to an estimated real-world size, so AR Quick Look shows it at the right size; without it, every model in cookbooks 01 and 03 came back 1.90 m tall whatever it depicts. The armchair came back 0.80 to 0.85 m tall. It is an estimate from the photos: a wooden toy car tried while building this cookbook came back as a 2.8 m car, so check the number |
 | [`origin_at`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `"bottom"` | Puts the origin under the model so it sits on the floor in a viewer. Use `"center"` for things that hang or float |
 | [`multi_view_thumbnails`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | Front, right, back and left renders as transparent 512 px PNGs for about three extra seconds. The front one is the same image the API returns as `thumbnail_url` |
 | [`target_formats`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `["glb", "usdz"]` | GLB for the web viewer, USDZ for AR Quick Look on iOS; every format is a conversion step after generation. Add `"fbx"` for a game engine |
