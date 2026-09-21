@@ -81,7 +81,7 @@ concept = client.wait("text-to-image", concept_id)
 client.download(concept["image_urls"][0], OUTPUT / "hero-prop-concept.png")
 ```
 
-   This stage took 37 to 40 seconds in the four runs behind this README. Leave `generate_multi_view` off here: `image-to-3d` only accepts `input_task_id` from a task that produced one image, and the multi-image route is what cookbook 03 uses.
+   This stage takes 37 to 40 seconds. Leave `generate_multi_view` off here: `image-to-3d` only accepts `input_task_id` from a task that produced one image, and the multi-image route is what cookbook 03 uses.
 
 3. **Chain the image into an Ultra 4K image-to-3d task.** `client.create` POSTs to `/openapi/v1/image-to-3d` with `input_task_id` pointing at the text-to-image task, so the image never leaves Meshy.
 
@@ -109,7 +109,7 @@ client.download(task["model_urls"]["glb"], OUTPUT / "hero-prop.glb")
 client.download(task["thumbnail_url"], OUTPUT / "hero-prop-thumbnail.png")
 ```
 
-   Generation took between 6 min 09 s and 6 min 30 s across the four runs, so most of the wait is here. The mesh comes back dense: 0.82 to 1.25 million triangles and 53 to 68 MB with the 4K maps, so plan on a decimation pass in Blender before it goes into a scene.
+   Generation takes between 6 min 09 s and 6 min 30 s, so most of the wait is here. The mesh comes back dense: 0.82 to 1.25 million triangles and 53 to 68 MB with the 4K maps, so plan on a decimation pass in Blender before it goes into a scene.
 
 ## Parameters worth changing
 

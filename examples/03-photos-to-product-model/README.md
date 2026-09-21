@@ -88,7 +88,7 @@ task_id = client.create(
 task = client.wait("multi-image-to-3d", task_id)
 ```
 
-   On `FAILED` or `CANCELED` it raises with `task_error.message`, and after 30 minutes it raises `MeshyTimeoutError`. The armchair took 3 min 30 s to 3 min 48 s to generate in the four runs behind this README. Formats are converted after generation, and that step is where a dense mesh can stall: a plush toy tried while building this cookbook sat at 99 percent for 27 minutes and then failed with `format_conversion_failed`, refunded.
+   On `FAILED` or `CANCELED` it raises with `task_error.message`, and after 30 minutes it raises `MeshyTimeoutError`. The armchair takes 3 min 30 s to 3 min 48 s to generate. Formats are converted after generation, and that step is where a dense mesh can stall: a plush toy tried while building this cookbook sat at 99 percent for 27 minutes and then failed with `format_conversion_failed`, refunded.
 
 3. **Download the GLB, the USDZ and the four renders.** `client.download` streams `model_urls.glb` and `model_urls.usdz` to `output/`, then each entry of `thumbnail_urls`, and the script prints the path and the credits the task reported.
 
@@ -99,7 +99,7 @@ for view, url in task["thumbnail_urls"].items():
     client.download(url, OUTPUT / f"armchair-{view}.png")
 ```
 
-   The mesh comes back dense for the web: 168,196 to 249,108 triangles and 29.0 to 32.6 MB for the GLB with its 4K maps in the four runs behind this README, so plan on a decimation pass and texture compression before it goes on a product page.
+   The mesh comes back dense for the web: 168,196 to 249,108 triangles and 29.0 to 32.6 MB for the GLB with its 4K maps, so plan on a decimation pass and texture compression before it goes on a product page.
 
 ## Parameters worth changing
 
@@ -110,7 +110,7 @@ for view, url in task["thumbnail_urls"].items():
 | [`should_texture`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | You want a textured model, not a gray mesh. Set `false` for geometry only, which drops the task to 25 credits with Ultra |
 | [`enable_pbr`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | Adds metallic, roughness and normal maps that model-viewer and three.js render without extra setup. Needs `should_texture: true` |
 | [`texture_resolution`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `"4k"` | 4096 × 4096 base color and normal maps instead of the 2048 default, at the same credit cost. `"8k"` costs 5 more |
-| [`auto_size`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | Scales the model to an estimated real-world size, so AR Quick Look shows it at the right size; without it, every model in cookbooks 01 and 02 came back 1.90 m tall whatever it depicts. The armchair came back 0.80 to 0.85 m tall across four runs. It is an estimate from the photos: a wooden toy car tried while building this cookbook came back as a 2.8 m car, so check the number |
+| [`auto_size`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | Scales the model to an estimated real-world size, so AR Quick Look shows it at the right size; without it, every model in cookbooks 01 and 02 came back 1.90 m tall whatever it depicts. The armchair came back 0.80 to 0.85 m tall. It is an estimate from the photos: a wooden toy car tried while building this cookbook came back as a 2.8 m car, so check the number |
 | [`origin_at`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `"bottom"` | Puts the origin under the model so it sits on the floor in a viewer. Use `"center"` for things that hang or float |
 | [`multi_view_thumbnails`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `true` | Front, right, back and left renders as transparent 512 px PNGs for about three extra seconds. The front one is the same image the API returns as `thumbnail_url` |
 | [`target_formats`](https://docs.meshy.ai/en/api/multi-image-to-3d#create-a-multi-image-to-3d-task) | `["glb", "usdz"]` | GLB for the web viewer, USDZ for AR Quick Look on iOS; every format is a conversion step after generation. Add `"fbx"` for a game engine |
