@@ -1,10 +1,10 @@
-// Turn a blocky concept image into a low-poly GLB in seconds.
+// Turn a low-poly concept image into a low-poly GLB in seconds.
 
 import { join } from "node:path";
 import { Meshy } from "../../../shared/typescript/meshy.js";
 
 const DIRECTORY = import.meta.dirname;
-const SAMPLE = join(DIRECTORY, "../input/voxel-cottage.png");
+const SAMPLE = join(DIRECTORY, "../input/low-poly-oak.png");
 const INPUT = process.argv[2] ?? SAMPLE;
 const POLYCOUNT = process.argv[3] ? Number(process.argv[3]) : 1000;
 const OUTPUT = join(DIRECTORY, "output");

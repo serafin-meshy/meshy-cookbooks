@@ -8,7 +8,7 @@ selected language's `main` file, and the shared client it imports.
 | One image → character or prop GLB | `examples/01-image-to-3d-character` |
 | Description → concept image → textured prop GLB | `examples/02-text-to-hero-prop` |
 | One to four product photos, front first → GLB and USDZ | `examples/03-photos-to-product-model` |
-| One blocky concept image → low-poly GLB at a chosen face count | `examples/04-image-to-low-poly-prop` |
+| One concept image → low-poly GLB at a chosen face count | `examples/04-image-to-low-poly-prop` |
 
 - A live run spends Meshy credits; each README states the amount. Tell the user the cost
   and wait for their approval before running, unless they already gave it.
