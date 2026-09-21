@@ -7,6 +7,8 @@ Turn one sentence into an Ultra 4K hero prop GLB in about 7 minutes.
 **Time:** ~7 minutes  
 **Languages:** Python 3.10+ · TypeScript (Node 22+)
 
+`text-to-image` and `image-to-3d` are separate Meshy endpoints, and `input_task_id` lets the second one read the first one's result without the image leaving Meshy. Chaining them is the right approach when you have a description and no art, and it keeps the concept image as a file on disk, so you can see what the 3D stage worked from. This recipe generates a transparent cut-out of a pirate chest from one sentence, feeds it into an Ultra 4K `image-to-3d` task with 4K textures, and downloads the GLB; cookbook 01 starts from your own image instead and skips the first stage.
+
 ## Run it
 
 Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Enterprise) and about 44 credits. Create an API key at https://www.meshy.ai/developers/ and check your credit balance at https://www.meshy.ai/settings/subscription. Current rates are at https://docs.meshy.ai/en/api/pricing. Then:

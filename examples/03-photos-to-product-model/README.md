@@ -7,6 +7,8 @@ Turn three product photos into a life-size, 4K-textured GLB and USDZ in under 4 
 **Time:** ~4 minutes  
 **Languages:** Python 3.10+ · TypeScript (Node 22+)
 
+`multi-image-to-3d` accepts up to four photos of the same object and treats the first as the front view, so the back and sides come from real photos instead of being inferred from one angle. It is the right endpoint when the object exists and you can photograph it, which is the usual case for product pages and AR previews. This recipe sends three photos of an armchair, asks for Ultra 2K geometry, 4K PBR textures, real-world scale and a floor origin, and downloads a GLB for the web viewer, a USDZ for Quick Look and four turnaround renders; cookbook 01 is the single-image version on `image-to-3d`.
+
 ## Run it
 
 Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Enterprise) and about 35 credits. Create an API key at https://www.meshy.ai/developers/ and check your credit balance at https://www.meshy.ai/settings/subscription. Current rates are at https://docs.meshy.ai/en/api/pricing. Then:

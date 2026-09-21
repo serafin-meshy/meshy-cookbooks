@@ -7,6 +7,8 @@ Turn one piece of character concept art into a textured GLB in 2 to 3 minutes.
 **Time:** ~2 to 3 minutes  
 **Languages:** Python 3.10+ · TypeScript (Node 22+)
 
+`image-to-3d` takes one picture and returns a textured mesh, and it runs as a single task, so the whole recipe is one request, one poll loop and one download. That makes it the right starting point when you already have concept art and want to see it as a model before deciding how far to take it. This recipe sends one PNG as a data URI with texturing and PBR maps turned on and downloads a dense GLB of around a million triangles; cookbook 04 uses the same endpoint with Smart Topology when you want a light, untextured low-poly mesh instead.
+
 ## Run it
 
 Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Enterprise) and about 30 credits. Create an API key at https://www.meshy.ai/developers/ and check your credit balance at https://www.meshy.ai/settings/subscription. Current rates are at https://docs.meshy.ai/en/api/pricing. Then:
