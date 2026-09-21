@@ -9,7 +9,7 @@ Turn three product photos into a life-size, 4K-textured GLB and USDZ in under 6 
 
 ## Run it
 
-Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Enterprise) and about 35 credits. Create an API key at https://www.meshy.ai/settings/api and check your credit balance at https://www.meshy.ai/settings/subscription. Current rates are at https://docs.meshy.ai/en/api/pricing. Then:
+Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Enterprise) and about 35 credits. Create an API key at https://www.meshy.ai/developers/ and check your credit balance at https://www.meshy.ai/settings/subscription. Current rates are at https://docs.meshy.ai/en/api/pricing. Then:
 
 **Python**
 

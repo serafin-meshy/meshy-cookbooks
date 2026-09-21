@@ -9,7 +9,7 @@ Turn one sentence into a 4K-textured hero prop GLB in 6 to 7 minutes.
 
 ## Run it
 
-Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Enterprise) and about 44 credits. Create an API key at https://www.meshy.ai/settings/api and check your credit balance at https://www.meshy.ai/settings/subscription. Current rates are at https://docs.meshy.ai/en/api/pricing. Then:
+Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Enterprise) and about 44 credits. Create an API key at https://www.meshy.ai/developers/ and check your credit balance at https://www.meshy.ai/settings/subscription. Current rates are at https://docs.meshy.ai/en/api/pricing. Then:
 
 **Python**
 
