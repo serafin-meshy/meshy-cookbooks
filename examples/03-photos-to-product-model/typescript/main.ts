@@ -15,7 +15,7 @@ const OUTPUT = join(DIRECTORY, "output");
 const client = new Meshy(); // reads MESHY_API_KEY from .env
 const taskId = await client.create("multi-image-to-3d", {
   image_urls: await Promise.all(PHOTOS.map((path) => Meshy.dataUri(path))),
-  ultra_mode: true,
+  geometry_resolution: "2k",
   should_texture: true,
   enable_pbr: true,
   texture_resolution: "4k",

@@ -1,4 +1,4 @@
-// Turn a text prompt into an Ultra, 4K-textured hero prop GLB.
+// Turn a text prompt into an Ultra 4K hero prop GLB with 4K textures.
 
 import { join } from "node:path";
 import { Meshy } from "../../../shared/typescript/meshy.js";
@@ -22,7 +22,7 @@ await client.download(concept.image_urls[0], join(OUTPUT, "hero-prop-concept.png
 
 const taskId = await client.create("image-to-3d", {
   input_task_id: conceptId,
-  ultra_mode: true,
+  geometry_resolution: "4k",
   should_texture: true,
   enable_pbr: true,
   texture_resolution: "4k",

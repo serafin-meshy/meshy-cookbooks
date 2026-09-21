@@ -20,7 +20,7 @@ task_id = client.create(
     "multi-image-to-3d",
     {
         "image_urls": [Meshy.data_uri(p) for p in PHOTOS],
-        "ultra_mode": True,
+        "geometry_resolution": "2k",
         "should_texture": True,
         "enable_pbr": True,
         "texture_resolution": "4k",

@@ -1,4 +1,4 @@
-"""Turn a text prompt into an Ultra, 4K-textured hero prop GLB."""
+"""Turn a text prompt into an Ultra 4K hero prop GLB with 4K textures."""
 
 import sys
 from pathlib import Path
@@ -31,7 +31,7 @@ task_id = client.create(
     "image-to-3d",
     {
         "input_task_id": concept_id,
-        "ultra_mode": True,
+        "geometry_resolution": "4k",
         "should_texture": True,
         "enable_pbr": True,
         "texture_resolution": "4k",
