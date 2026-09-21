@@ -80,7 +80,7 @@ task_id = client.create(
 task = client.wait("image-to-3d", task_id)
 ```
 
-   On `FAILED` or `CANCELED` it raises with `task_error.message` and the script exits non-zero, and Meshy refunds the credits of a `FAILED` task. The four runs behind this README took between 1 min 34 s and 2 min 40 s end to end, almost all of it generation rather than queue time.
+   On `FAILED` or `CANCELED` it raises with `task_error.message` and the script exits non-zero, and Meshy refunds the credits of a `FAILED` task. A run takes between 1 min 34 s and 2 min 40 s end to end, almost all of it generation rather than queue time.
 
 3. **Download the GLB and the thumbnail.** `client.download` streams the signed `model_urls.glb` URL to `output/character.glb` and `thumbnail_url` to `output/character-thumbnail.png`, then the script prints the path and the credits the task reported.
 
@@ -89,7 +89,7 @@ client.download(task["model_urls"]["glb"], OUTPUT / "character.glb")
 client.download(task["thumbnail_url"], OUTPUT / "character-thumbnail.png")
 ```
 
-   The mesh comes back dense: 765,812 to 1,028,430 triangles and 28.0 to 35.9 MB across the four runs behind this README, far heavier than a game-ready asset, so plan on a decimation pass in Blender before it goes into a scene.
+   The mesh comes back dense: 765,812 to 1,028,430 triangles and 28.0 to 35.9 MB, far heavier than a game-ready asset, so plan on a decimation pass in Blender before it goes into a scene.
 
 ## Parameters worth changing
 

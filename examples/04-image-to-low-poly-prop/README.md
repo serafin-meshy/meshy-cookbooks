@@ -7,6 +7,8 @@ Turn a blocky concept image into a low-poly GLB in under 15 seconds.
 **Time:** under 15 seconds  
 **Languages:** Python 3.10+ · TypeScript (Node 22+)
 
+Smart Topology is a separate generation model, `meshy-t2`, that builds the mesh at the face count you ask for instead of sculpting a dense one and decimating it. That makes it the right tool when you need many small props for a blocky or voxel-style world and care more about the triangle budget and the turnaround than about surface detail. This recipe sends one image, gets back an untextured GLB of about 1,000 triangles, and lets you change the face count from the command line; cookbook 01 uses the same endpoint without Smart Topology when you want the dense, textured version instead.
+
 ## Run it
 
 Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Enterprise) and about 5 credits. Create an API key at https://www.meshy.ai/developers/ and check your credit balance at https://www.meshy.ai/settings/subscription. Current rates are at https://docs.meshy.ai/en/api/pricing. Then:
@@ -26,7 +28,7 @@ Live runs need a Meshy plan with API access (Pro, Premium, Ultra, Studio, or Ent
     npm install
     npm start
 
-You get `output/low-poly-prop.glb` and a 512 px preview at `output/low-poly-prop-thumbnail.png`. Open the GLB in Blender with File > Import > glTF 2.0, then press Z and choose Wireframe to see the triangles, which is what this cookbook is about.
+You get `output/low-poly-prop.glb` and a 512 px preview at `output/low-poly-prop-thumbnail.png`. Open the GLB in Blender with File > Import > glTF 2.0, then press Z and choose Wireframe to see the triangles.
 
 To use your own image, or a different face count, pass them in that order:
 
@@ -72,7 +74,7 @@ task_id = client.create(
 )
 ```
 
-   The mesh is generated directly at the target face count instead of being sculpted dense and decimated afterwards, which is where the speed comes from. The count is approximate: a target of 1,000 gave 834 to 983 triangles across four runs of the voxel cottage, 100 gave 116, and 15,000 gave 15,962.
+   The mesh is generated directly at the target face count instead of being sculpted dense and decimated afterwards, which is where the speed comes from. The count is approximate: on the voxel cottage a target of 1,000 gave 834 to 983 triangles, 100 gave 116, and 15,000 gave 15,962.
 
 2. **Wait for it.** `client.wait` GETs `/openapi/v1/image-to-3d/:id` every 5 seconds and prints each status change, so you will see one or two `IN_PROGRESS` lines before `SUCCEEDED`.
 
@@ -80,7 +82,7 @@ task_id = client.create(
 task = client.wait("image-to-3d", task_id)
 ```
 
-   Generation took 2.8 to 10.8 seconds across the four runs behind this README, and the wall time from `python main.py` to the file on disk was 7 to 13 seconds. The task object does not report which model ran; `consumed_credits` of 5 (rather than 20 for a standard untextured task) is your confirmation that Smart Topology did.
+   Generation takes 3 to 11 seconds, and the wall time from `python main.py` to the file on disk is 7 to 13 seconds. The task object does not report which model ran; `consumed_credits` of 5 (rather than 20 for a standard untextured task) is your confirmation that Smart Topology did.
 
 3. **Download the GLB and the preview.** `client.download` streams `model_urls.glb` and `thumbnail_url` to disk and the script prints the path and the credits.
 
